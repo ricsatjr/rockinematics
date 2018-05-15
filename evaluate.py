@@ -4,12 +4,10 @@ import matplotlib.pyplot as plt
 import envelopes as env
 from itertools import combinations as itercomb
 
-
-
 def line_in_cone(cplunge, cbearing, cangle, lplunge, lbearing):
     """
-    Evaluates if line is within a small circle (cone). Angular difference 
-    between the line, and the cone center line should be less than 
+    Evaluates if line is within a small circle (cone), such that the acute 
+    angle between the line, and the cone center line should be less than 
     the cone angle. 
     
     Parameters
@@ -24,16 +22,14 @@ def line_in_cone(cplunge, cbearing, cangle, lplunge, lbearing):
     ang_diff<cangle: boolean
         True if line is within the cone 
     """
-    ang_diff=np.degrees(st.angular_distance(st.line(cplunge,cbearing),st.line(lplunge,lbearing),False))
-    return ang_diff<cangle
-    
-    
+    ang_dist=np.degrees(st.angular_distance(st.line(cplunge,cbearing),st.line(lplunge,lbearing),False))
+    return ang_dist<cangle
 
 def line_above_plane(strike,dip,lplunge,lbearing):
     """
-    Evaluates if line is above a plane (great circle). Line should be 
-    above its vertical projection onto the plane (as rake), and should have
-    the same bearing as the rake. 
+    Evaluates if line is above a plane (great circle), such that 
+    1) the line has a smaller plunge compared to that of its vertical projection 
+    onto the plane (as rake), and 2) it has the same bearing as that of the rake. 
     
     Parameters
     ----------
@@ -57,16 +53,17 @@ def line_above_plane(strike,dip,lplunge,lbearing):
     rlon,rlat=st.rake(strike, dip, rake_angle)
     rplunge,rbearing=st.geographic2plunge_bearing(rlon, rlat)
 #    evaluate if line is above the rake
-    aboveplane=rplunge>lplunge
+    smallerplunge=rplunge>lplunge
 #    evaluate if line has the same bearing as the rake
     samebearing=np.abs(rbearing-lbearing)<0.001
-    return aboveplane*samebearing
+    return smallerplunge*samebearing
     
 
 def planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
     """
     Evaluates planar failure of joints vis-a-vis a slope face 
-    with a given strike and dip.
+    with a given strike and dip, such that a joint's pole plots 1) within the
+    planar daylight envelope, and 2) outside the planar friction envelope
     
     Parameters
     ----------
@@ -109,9 +106,8 @@ def planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
     for a in range(len(jstr)):
         inDaylight[a]=line_in_cone(pde_plunge, pde_bearing, pde_angle, jplunge[a], jbearing[a])
         outFriction[a]=~line_in_cone(pfe_plunge[a], pfe_bearing[a], pfe_angle[a], jplunge[a], jbearing[a])
-    
-    planarFail=((inDaylight==True)&(outFriction==True))
-    
+    planarFail=(inDaylight==True)&(outFriction==True)
+#    plotting results
     if uniformFriction and to_plot:
         env.setup_axes(sstr,sdip,jfriction[0],failure='planar',to_plot=True)
         plt.gca().pole(jstr[~planarFail],jdip[~planarFail],color='0.5',marker='.')
@@ -121,7 +117,10 @@ def planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
 def wedgeFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
     """
     Evaluates wedge failure of joints vis-a-vis a slope face 
-    with a given strike and dip.
+    with a given strike and dip, such that a line defined by the intersection
+    of two joints plots 1) on the convex side of the wedge daylight envelope, 
+    and 2) within the wedge friction envelope. For each line, it conservatively
+    uses the smaller friction angle (jfriction)
     
     Parameters
     ----------
@@ -153,39 +152,34 @@ def wedgeFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
     except:
         jfriction=jfriction*(np.ones(len(jstr)))
         uniformFriction=True
-
 #    get plunge and bearing of unique joint pair intersections
     c=np.array(list(itercomb(range(len(jstr)),2)))
     wl_plunge,wl_bearing=st.plane_intersection(jstr[c[:,0]], jdip[c[:,0]], jstr[c[:,1]], jdip[c[:,1]])
 #    get minimum jfriction for each joint pair
     wl_friction=np.min((np.vstack([jfriction[c[:,0]],jfriction[c[:,1]]])),axis=0)
-    
 #    determinde daylight and friction envelopes
     wde_strike, wde_dip=env.wedge_daylight(sstr,sdip,False)
     wfe_plunge, wfe_bearing, wfe_angle=env.wedge_friction(wl_friction,False)
-
 #    evaluate if wedge lines are within daylight and friction envelopes (cones)
-    inDaylight=np.empty(len(wl_plunge))
+    convexDaylight=np.empty(len(wl_plunge))
     inFriction=np.empty(len(wl_plunge))
     for a in range(len(wl_plunge)):
-        inDaylight[a]=line_above_plane(wde_strike, wde_dip, wl_plunge[a], wl_bearing[a])
+        convexDaylight[a]=line_above_plane(wde_strike, wde_dip, wl_plunge[a], wl_bearing[a])
         inFriction[a]=line_in_cone(wfe_plunge[a], wfe_bearing[a], wfe_angle[a], wl_plunge[a], wl_bearing[a])
-    
-    wedgeFail=((inDaylight==True)&(inFriction==True))
-    print wedgeFail.shape
-    
+    wedgeFail=((convexDaylight==True)&(inFriction==True))
+#    plotting results
     if uniformFriction and to_plot:
         env.setup_axes(sstr,sdip,jfriction[0],failure='wedge',to_plot=True)
         plt.gca().line(wl_plunge[~wedgeFail],wl_bearing[~wedgeFail],color='0.5',marker='.')
         plt.gca().line(wl_plunge[wedgeFail],wl_bearing[wedgeFail],color='r',marker='.')
     return wedgeFail
 
-
-
 def topplingFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
     """
     Evaluates toppling failure of joints vis-a-vis a slope face 
-    with a given strike and dip.
+    with a given strike and dip, such that a joint's pole plots 1) within the
+    toppling slip limits, and 2) on the convex side of the toppling friction 
+    envelope
     
     Parameters
     ----------
@@ -225,14 +219,13 @@ def topplingFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
 #    evaluate if joint poles are contained within slip limits (cones) and friction envelope (great circles)
     inSlipLimit1=np.empty(len(jstr))
     inSlipLimit2=np.empty(len(jstr))
-    aboveFriction=np.empty(len(jstr))
+    convexFriction=np.empty(len(jstr))
     for a in range(len(jstr)):
         inSlipLimit1[a]=~line_in_cone(tsl_plunge, tsl_bearing, tsl_angle, jplunge[a], jbearing[a])
         inSlipLimit2[a]=~line_in_cone(tsl_plunge, tsl_bearing+180, tsl_angle, jplunge[a], jbearing[a])
-        aboveFriction[a]=line_above_plane(tfe_strike[0],tfe_dip[a],jplunge[a], jbearing[a])
-        
-    topplingFail=((inSlipLimit1==True)&(inSlipLimit2==True)&(aboveFriction==True))
-    
+        convexFriction[a]=line_above_plane(tfe_strike[0],tfe_dip[a],jplunge[a], jbearing[a])
+    topplingFail=((inSlipLimit1==True)&(inSlipLimit2==True)&(convexFriction==True))
+#    plotting results    
     if uniformFriction and to_plot:
         env.setup_axes(sstr,sdip,jfriction[a],failure='toppling',to_plot=True)
         plt.gca().pole(jstr[~topplingFail],jdip[~topplingFail],color='0.5',marker='.')
