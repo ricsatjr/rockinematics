@@ -195,14 +195,9 @@ def toppling_friction(strike,dip,friction=30,to_plot=True,linecolor='r',segments
 #    computing toppling friction envelopes    
     tfe_strikes=strikes
     tfe_dips=np.where(dips-frictions>0,dips-frictions,np.zeros(len(strikes)))
-#    if dips-frictions>0:
-#        tfe_dips=dips-frictions
-#    else:
-#        tfe_dips=np.zeros(len(strikes))
-#    plotting toppling friction envelopes
     if to_plot:
         ax=plt.gca()
-        ax.plane(strikes,tde_dips,c=linecolor)
+        ax.plane(tfe_strikes,tfe_dips,c=linecolor)
     return tfe_strikes, tfe_dips
     
 def setup_axes(strike,dip,friction,failure='all',to_plot=True):
