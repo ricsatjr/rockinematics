@@ -59,7 +59,7 @@ def line_above_plane(strike,dip,lplunge,lbearing):
     return smallerplunge*samebearing
     
 
-def planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
+def planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=False):
     """
     Evaluates planar failure of joints vis-a-vis a slope face 
     with a given strike and dip, such that a joint's pole plots 1) within the
@@ -114,7 +114,7 @@ def planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
         plt.gca().pole(jstr[planarFail],jdip[planarFail],color='r',marker='.')
     return planarFail
 
-def wedgeFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
+def wedgeFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=False):
     """
     Evaluates wedge failure of joints vis-a-vis a slope face 
     with a given strike and dip, such that a line defined by the intersection
@@ -174,7 +174,7 @@ def wedgeFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
         plt.gca().line(wl_plunge[wedgeFail],wl_bearing[wedgeFail],color='r',marker='.')
     return wedgeFail
 
-def topplingFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
+def topplingFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=False):
     """
     Evaluates toppling failure of joints vis-a-vis a slope face 
     with a given strike and dip, such that a joint's pole plots 1) within the
@@ -233,14 +233,14 @@ def topplingFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
     return topplingFail
 
 plt.close('all')
-
+to_plot=True
 sstr=60
 sdip=70
 jfriction=25    
 n=200
 jstr=np.random.randint(0,360,n)
 jdip=np.random.randint(30,90,n)
-planarFail=planarFailure(sstr,sdip,jfriction,jstr,jdip)
-topplingFail=topplingFailure(sstr,sdip,jfriction,jstr,jdip)
-wedgeFailure(sstr,sdip,jfriction,jstr[:25],jdip[:25])
+planarFail=planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot)
+topplingFail=topplingFailure(sstr,sdip,jfriction,jstr,jdip,to_plot)
+wedgeFailure(sstr,sdip,jfriction,jstr[:25],jdip[:25],to_plot)
 

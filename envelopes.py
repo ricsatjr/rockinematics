@@ -22,7 +22,7 @@ import numpy as np
 import mplstereonet.mplstereonet as st
 import matplotlib.pyplot as plt
 
-def planar_daylight(strike,dip,to_plot=True,facecolor='none',edgecolor='b',segments=100):
+def planar_daylight(strike,dip,to_plot=False,facecolor='none',edgecolor='b',segments=100):
     """
     Draws the planar daylight envelope (cone) with respect to a 
     slope face with a given strike and dip.
@@ -55,7 +55,7 @@ def planar_daylight(strike,dip,to_plot=True,facecolor='none',edgecolor='b',segme
         ax.cone(pde_plunge,pde_bearing, pde_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='pDE')
     return pde_plunge,pde_bearing,pde_angle
 
-def planar_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segments=100):
+def planar_friction(friction=30,to_plot=False,facecolor='none',edgecolor='r',segments=100):
     """
     Draws the planar friction envelope (cone) given friction angle of the sliding plane
     
@@ -80,7 +80,7 @@ def planar_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segm
         ax.cone(pfe_plunge,pfe_bearing, pfe_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='pFE')
     return pfe_plunge, pfe_bearing, pfe_angle
 
-def wedge_daylight(strike,dip,to_plot=True,linecolor='b',segments=100):
+def wedge_daylight(strike,dip,to_plot=False,linecolor='b',segments=100):
     """
     Draws the wedge daylight envelope (great circle) with respect to a 
     slope face with a given strike and dip.
@@ -107,7 +107,7 @@ def wedge_daylight(strike,dip,to_plot=True,linecolor='b',segments=100):
         ax.plane(wde_strike,wde_dip,c=linecolor)#,label='wDE')
     return wde_strike,wde_dip
 
-def wedge_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segments=100):
+def wedge_friction(friction=30,to_plot=False,facecolor='none',edgecolor='r',segments=100):
     """
     Draws the wedge friction envelope (cone) given friction angle of the sliding plane
     
@@ -133,7 +133,7 @@ def wedge_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segme
     return wfe_plunge, wfe_bearing, wfe_angle
 
 
-def toppling_slipLimits(strike,dip,to_plot=True,linecolor='b',segments=100):
+def toppling_slipLimits(strike,dip,to_plot=False,linecolor='b',segments=100):
     """
     Draws the toppling friction envelope (cone) with given friction angle of sliding plane
     and slope face with a given strike and dip.
@@ -169,7 +169,7 @@ def toppling_slipLimits(strike,dip,to_plot=True,linecolor='b',segments=100):
         ax.cone(tsl_plunge,tsl_bearing,tsl_angle,facecolor='none',edgecolor='b')
     return tsl_plunge,tsl_bearing,tsl_angle
 
-def toppling_friction(strike,dip,friction=30,to_plot=True,linecolor='r',segments=100):
+def toppling_friction(strike,dip,friction=30,to_plot=False,linecolor='r',segments=100):
     """
     Draws the toppling friction envelope (great circle) given sliding plane with friction angle, 
     and slope face with a strike and dip.
