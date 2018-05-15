@@ -42,9 +42,9 @@ def planar_daylight(strike,dip,to_plot=True,facecolor='none',edgecolor='b',segme
         Arrays of plunges, bearings, and angles of the planar daylight envelopes (cones).
     """
 
-    strikes, dips = np.atleast_1d(strike, dip)
+    strike, dip = np.atleast_1d(strike, dip)
 #    calculating plunge and bearing of pole to plane
-    p_plunge, p_bearing=st.pole2plunge_bearing(strikes, dips)
+    p_plunge, p_bearing=st.pole2plunge_bearing(strike, dip)
 #    calculating plunge, bearing, and angle of planar daylight envelope (cone)
     pde_plunge=45+p_plunge/2.
     pde_bearing=p_bearing
@@ -69,11 +69,11 @@ def planar_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segm
     pfe_plunge, pfe_bearing, pfe_angle: arrays
         Arrays of plunges, bearings, and angles of the planar friction envelopes (cones).
     """
-    frictions = np.atleast_1d(friction)
+    friction = np.atleast_1d(friction)
 #    computing plunge, bearing, and angle of planar friction envelope (cone)
-    pfe_plunge=90*np.ones(len(frictions))
-    pfe_bearing=np.zeros(len(frictions))
-    pfe_angle=frictions
+    pfe_plunge=90*np.ones(len(friction))
+    pfe_bearing=np.zeros(len(friction))
+    pfe_angle=friction
 #    plotting
     if to_plot:
         ax=plt.gca()
@@ -100,12 +100,12 @@ def wedge_daylight(strike,dip,to_plot=True,linecolor='b',segments=100):
         Arrays of strike and dip of the wedge daylight envelopes (great circles).
     """
 #    wedge daylight envelope is the same as the slope face orientation
-    wde_strikes, wde_dips = np.atleast_1d(strike, dip)
+    wde_strike, wde_dip = np.atleast_1d(strike, dip)
 #    plotting daylight envelope
     if to_plot:
         ax=plt.gca()
-        ax.plane(wde_strikes,wde_dips,c=linecolor)#,label='wDE')
-    return wde_strikes,wde_dips
+        ax.plane(wde_strike,wde_dip,c=linecolor)#,label='wDE')
+    return wde_strike,wde_dip
 
 def wedge_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segments=100):
     """
@@ -121,11 +121,11 @@ def wedge_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segme
     wfe_plunge, wfe_bearing, wfe_angle: arrays
         Arrays of plunges, bearings, and angles of the planar daylight envelopes (cones).
     """
-    frictions = np.atleast_1d(friction)
+    friction = np.atleast_1d(friction)
 #    computing plunge, bearing, and angle of planar friction envelope (cone)
-    wfe_plunge=90*np.ones(len(frictions))
-    wfe_bearing=np.zeros(len(frictions))
-    wfe_angle=90-frictions
+    wfe_plunge=90*np.ones(len(friction))
+    wfe_bearing=np.zeros(len(friction))
+    wfe_angle=90-friction
 #    plotting
     if to_plot:
         ax=plt.gca()
@@ -158,10 +158,10 @@ def toppling_slipLimits(strike,dip,to_plot=True,linecolor='b',segments=100):
     tsl1_plunge,tsl1_bearing,tsl1_angle, tsl2_plunge,tsl2_bearing,tsl2_angle: arrays
         Arrays of plunge, bearing, and angle of the toppling slip limits (cones).
     """
-    strikes,dips = np.atleast_1d(strike,dip)
+    strike,dip = np.atleast_1d(strike,dip)
 #    computing toppling slip limits (cones); assumes bidirectional cone plotting    
     tsl_plunge=0
-    tsl_bearing=strikes
+    tsl_bearing=strike
     tsl_angle=60
 #    plotting toppling slip limits    
     if to_plot:
@@ -191,14 +191,13 @@ def toppling_friction(strike,dip,friction=30,to_plot=True,linecolor='r',segments
     tfe_strikes,tfe_dips: arrays
         Arrays of strike and dip of the toppling friction envelopes (great circles).
     """
-    frictions,strikes,dips = np.atleast_1d(friction,strike,dip)
+    friction,tfe_strike,dip = np.atleast_1d(friction,strike,dip)
 #    computing toppling friction envelopes    
-    tfe_strikes=strikes
-    tfe_dips=np.where(dips-frictions>0,dips-frictions,np.zeros(len(strikes)))
+    tfe_dip=np.where(dip-friction>0,dip-friction,np.zeros(len(tfe_strike)))
     if to_plot:
         ax=plt.gca()
-        ax.plane(tfe_strikes,tfe_dips,c=linecolor)
-    return tfe_strikes, tfe_dips
+        ax.plane(tfe_strike,tfe_dip,c=linecolor)
+    return tfe_strike, tfe_dip
     
 def setup_axes(strike,dip,friction,failure='all',to_plot=True):
 
