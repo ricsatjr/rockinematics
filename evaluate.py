@@ -2,6 +2,7 @@ import numpy as np
 import mplstereonet.mplstereonet as st
 import matplotlib.pyplot as plt
 import envelopes as env
+from itertools import combinations as itercomb
 
 
 
@@ -112,10 +113,72 @@ def planarFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
     planarFail=((inDaylight==True)&(outFriction==True))
     
     if uniformFriction and to_plot:
-        env.setup_axes(sstr,sdip,jfriction[a],failure='planar',to_plot=True)
+        env.setup_axes(sstr,sdip,jfriction[0],failure='planar',to_plot=True)
         plt.gca().pole(jstr[~planarFail],jdip[~planarFail],color='0.5',marker='.')
         plt.gca().pole(jstr[planarFail],jdip[planarFail],color='r',marker='.')
     return planarFail
+
+def wedgeFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
+    """
+    Evaluates wedge failure of joints vis-a-vis a slope face 
+    with a given strike and dip.
+    
+    Parameters
+    ----------
+    sstr : int or float
+        The strike of the slope face in degrees, with dip direction indicated by
+        the azimuth (e.g. 315 vs. 135) specified following the "right hand
+        rule".
+    sdip : int or float
+        The dip of the slope face in degrees.
+    jfriction : int, float, or array of int or float
+        The friction angle of the joint plane in degrees.
+    jstr : int, float, or array of int or float
+        The strike of the joint plane in degrees, with dip direction indicated by
+        the azimuth (e.g. 315 vs. 135) specified following the "right hand
+        rule".
+    jdip : int, float, or array of int or float
+        The dip of the joint plane in degrees.
+        
+    Returns
+    -------
+    wedgeFail: boolean array of size = len(np.atleast_1d(jstr)) 
+        Indicates if corresponding joints will allow wedge failure.
+    """
+#    ensure jstr, jdip, and jfriction are 1-d arrays
+    jstr,jdip=np.atleast_1d(jstr,jdip)
+    try:
+        len(jfriction)
+        uniformFriction=False
+    except:
+        jfriction=jfriction*(np.ones(len(jstr)))
+        uniformFriction=True
+
+#    get plunge and bearing of unique joint pair intersections
+    c=np.array(list(itercomb(range(len(jstr)),2)))
+    wl_plunge,wl_bearing=st.plane_intersection(jstr[c[:,0]], jdip[c[:,0]], jstr[c[:,1]], jdip[c[:,1]])
+#    get minimum jfriction for each joint pair
+    wl_friction=np.min((np.vstack([jfriction[c[:,0]],jfriction[c[:,1]]])),axis=0)
+    
+#    determinde daylight and friction envelopes
+    wde_strike, wde_dip=env.wedge_daylight(sstr,sdip,False)
+    wfe_plunge, wfe_bearing, wfe_angle=env.wedge_friction(wl_friction,False)
+
+#    evaluate if wedge lines are within daylight and friction envelopes (cones)
+    inDaylight=np.empty(len(wl_plunge))
+    inFriction=np.empty(len(wl_plunge))
+    for a in range(len(wl_plunge)):
+        inDaylight[a]=line_above_plane(wde_strike, wde_dip, wl_plunge[a], wl_bearing[a])
+        inFriction[a]=line_in_cone(wfe_plunge[a], wfe_bearing[a], wfe_angle[a], wl_plunge[a], wl_bearing[a])
+    
+    wedgeFail=((inDaylight==True)&(inFriction==True))
+    print wedgeFail.shape
+    
+    if uniformFriction and to_plot:
+        env.setup_axes(sstr,sdip,jfriction[0],failure='wedge',to_plot=True)
+        plt.gca().line(wl_plunge[~wedgeFail],wl_bearing[~wedgeFail],color='0.5',marker='.')
+        plt.gca().line(wl_plunge[wedgeFail],wl_bearing[wedgeFail],color='r',marker='.')
+    return wedgeFail
 
 
 
@@ -178,13 +241,13 @@ def topplingFailure(sstr,sdip,jfriction,jstr,jdip,to_plot=True):
 
 plt.close('all')
 
-sstr=0
+sstr=60
 sdip=70
 jfriction=25    
 n=200
 jstr=np.random.randint(0,360,n)
-jdip=np.random.randint(0,90,n)
+jdip=np.random.randint(30,90,n)
 planarFail=planarFailure(sstr,sdip,jfriction,jstr,jdip)
 topplingFail=topplingFailure(sstr,sdip,jfriction,jstr,jdip)
-
+wedgeFailure(sstr,sdip,jfriction,jstr[:25],jdip[:25])
 
