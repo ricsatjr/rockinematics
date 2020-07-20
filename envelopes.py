@@ -19,7 +19,7 @@ Rocscience. 2000. DIPS (5.00) - Windows, Rocscience, Inc., Totonto, Ontario.
 """
 
 import numpy as np
-import mplstereonet.mplstereonet as st
+import mplstereonet as st
 import matplotlib.pyplot as plt
 
 def planar_daylight(strike,dip,to_plot=False,facecolor='none',edgecolor='b',segments=100):
@@ -250,6 +250,8 @@ def setup_axes(strike,dip,friction,failure='all',to_plot=True):
             toppling_slipLimits(strike,dip,to_plot)
         else:
             ax.grid(True)
+            
+        fig.tight_layout()
             
    
     return fig,ax

@@ -4,7 +4,7 @@ demonstration and sample problem for slope stability using kinematic analysis
 """
 
 import numpy as np
-import mplstereonet.mplstereonet as st
+import mplstereonet as st
 import matplotlib.pyplot as plt
 import envelopes as env
 
@@ -138,16 +138,16 @@ def kinematic_analysis_step_by_step(strike=60,dip=55,friction=25,jn=5):
     jstr=np.random.randint(0,361,jn)
     jdip=np.random.randint(15,91,jn)
     jddr=np.where(jstr>=270,jstr-270,jstr+90)
-    print "\n\nKINEMATIC ANALYSIS FOR SLOPE FAILURES"
-    print "\nProblem: Given a slope face and a set of planar rock discontinuities, determine the discontinuities which will facilitate planar, toppling, and wedge failures."
-    print "\n1) Slope face data\n--------"
-    print 'Strike - dip (RHR) / DipDir - dip'    
-    print strike, dip, ' / ', sddr, dip
-    print "\n2) Discontinuity data\n--------"
-    print "Friction angle, in degrees (for all): ",friction
-    print '\nDiscontinuity number / Strike-dip (RHR) / DipDir-dip'    
+    print("\n\nKINEMATIC ANALYSIS FOR SLOPE FAILURES")
+    print("\nProblem: Given a slope face and a set of planar rock discontinuities, determine the discontinuities which will facilitate planar, toppling, and wedge failures.")
+    print("\n1 Slope face data\n--------")
+    print('Strike - dip (RHR) / DipDir - dip')    
+    print(strike, dip, ' / ', sddr, dip)
+    print("\n2 Discontinuity data\n--------")
+    print("Friction angle, in degrees (for all): ",friction)
+    print('\nDiscontinuity number / Strike-dip (RHR) / DipDir-dip')    
     for j in range(len(jstr)):
-        print j+1, ' / ',jstr[j],jdip[j], ' / ', jddr[j],jdip[j]
+        print(j+1, ' / ',jstr[j],jdip[j], ' / ', jddr[j],jdip[j])
     demo_planar(strike,dip,friction,jstr,jdip)
     demo_wedge(strike,dip,friction,jstr,jdip)
     demo_toppling(strike,dip,friction,jstr,jdip)
@@ -166,16 +166,16 @@ def kinematic_analysis_results(plotfig=False):
     jdip=np.array([20,50,80,65,55])           
     jddr=np.where(jstr>=270,jstr-270,jstr+90)
 #    printing exercise title, problem, and input data
-    print "\n\nKINEMATIC ANALYSIS FOR SLOPE FAILURES"
-    print "\nProblem: Given a slope face and a set of planar rock discontinuities, determine the discontinuities which will facilitate planar, toppling, and wedge failures."
-    print "\n1) Slope face data\n--------"
-    print 'Strike - dip (RHR) / DipDir - dip'    
-    print strike, dip, ' / ', sddr, dip
-    print "\n2) Discontinuity data\n--------"
-    print "Friction angle, in degrees (for all): ",friction
-    print '\nDiscontinuity number / Strike-dip (RHR) / DipDir-dip'    
+    print("\n\nKINEMATIC ANALYSIS FOR SLOPE FAILURES")
+    print("\nProblem: Given a slope face and a set of planar rock discontinuities, determine the discontinuities which will facilitate planar, toppling, and wedge failures.")
+    print("\n1 Slope face data\n--------")
+    print('Strike - dip (RHR) / DipDir - dip')    
+    print(strike, dip, ' / ', sddr, dip)
+    print("\n2 Discontinuity data\n--------")
+    print("Friction angle, in degrees (for all): ",friction)
+    print('\nDiscontinuity number / Strike-dip (RHR) / DipDir-dip'    )
     for j in range(len(jstr)):
-        print j+1, ' / ',jstr[j],jdip[j], ' / ', jddr[j],jdip[j]
+        print(j+1, ' / ',jstr[j],jdip[j], ' / ', jddr[j],jdip[j])
     if plotfig:
 #       kinematic analysis axes
         fig,ax=env.setup_axes(strike,dip,friction,'all',True)

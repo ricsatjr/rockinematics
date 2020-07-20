@@ -1,5 +1,5 @@
 import numpy as np
-import mplstereonet.mplstereonet as st
+import mplstereonet as st
 import matplotlib.pyplot as plt
 import envelopes as env
 from itertools import combinations as itercomb
